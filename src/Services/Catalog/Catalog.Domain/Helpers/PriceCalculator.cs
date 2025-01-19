@@ -2,13 +2,13 @@ namespace Catalog.Domain.Helpers
 {
     public static class PriceCalculator
     {
-        private const decimal MINIMUM_MARKUP_PERCENTAGE = 0.2m; // 20%
+        private const decimal MINIMUM_MARKUP_PERCENTAGE = 0.2m; 
 
         public static decimal EnsureMinimumSalePrice(decimal purchasePrice, decimal salePrice)
         {
             var minimumSalePrice = purchasePrice * (1 + MINIMUM_MARKUP_PERCENTAGE);
 
-            // Log with more visibility
+
             Console.WriteLine("----------------------------------------");
             Console.WriteLine($"CALCULATION FOR PLATE:");
             Console.WriteLine($"Purchase Price: £{purchasePrice:N2}");

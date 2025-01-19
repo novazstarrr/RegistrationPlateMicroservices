@@ -1,17 +1,75 @@
+version: '3.8'
+
 services:
   webmvc:
-    image: regtansfers/rtcodingexercise-webmvc
+    image: regtransfers/rtcodingexercise-webmvc
+    platform: linux/arm64
+    container_name: webmvc
     build:
       context: .
       dockerfile: src/Web/WebMVC/Dockerfile
+      platforms:
+        - linux/arm64
     depends_on:
       - catalog-api
+    ports:
+      - "5100:80"
+    networks:
+      - rt-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - CatalogApi=http://catalog-api/
 
   catalog-api:
     image: regtransfers/rtcodingexercise-catalogapi
+    platform: linux/arm64
+    container_name: catalog-api
     build:
       context: .
       dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
+      platforms:
+        - linux/arm64
+    # No health check.
+    depends_on:
+      - rabbitmq
+      - sqlserver
+    ports:
+      - "5101:80"
+    networks:
+      - rt-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__CatalogConnection=Server=sqlserver;Database=RTCodingExercise.Services.CatalogDb;User Id=sa;Password=Pass@word;TrustServerCertificate=true
+      - EventBusConnection=rabbitmq
+      - EventBusUserName=guest
+      - EventBusPassword=guest
+      - PATH_BASE=/api/v1
+    restart: on-failure
+
+  sqlserver:
+    image: mcr.microsoft.com/azure-sql-edge
+    container_name: sqlserver
+    ports:
+      - "5433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pass@word
+      - MSSQL_PID=Developer
+    # no healthcheck here
+    networks:
+      - rt-network
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
+    platform: linux/arm64
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    # no healthcheck
+    networks:
+      - rt-network
+
+networks:
+  rt-network:
+    driver: bridge

@@ -21,7 +21,7 @@ namespace RTCodingExercise.Microservices.Controllers
         {
             _httpClient = httpClient;
             _logger = logger;
-            _catalogApiUrl = configuration["CatalogApi"] ?? "http://localhost:5000/api/v1/";
+            _catalogApiUrl = configuration["CatalogApi"] ?? "http://localhost:5000/";
         }
 
         public async Task<IActionResult> Index(
@@ -35,7 +35,7 @@ namespace RTCodingExercise.Microservices.Controllers
             {
                 nameMatch = nameMatch?.Trim().Replace(" ", "");
 
-                var queryString = $"plates?pageNumber={pageNumber}&pageSize=20";
+                var queryString = $"api/v1/plates?pageNumber={pageNumber}&pageSize=20";
                 if (minPrice.HasValue) queryString += $"&minPrice={minPrice}";
                 if (maxPrice.HasValue) queryString += $"&maxPrice={maxPrice}";
                 if (!string.IsNullOrEmpty(sortOrder)) queryString += $"&sortOrder={sortOrder}";
@@ -88,7 +88,7 @@ namespace RTCodingExercise.Microservices.Controllers
         {
             try
             {
-                var requestUrl = $"{_catalogApiUrl}plates/{id}/status";
+                var requestUrl = $"{_catalogApiUrl}api/v1/plates/{id}/status";
                 _logger.LogInformation("Making request to: {Url}", requestUrl);
 
                 var response = await _httpClient.PatchAsync(
@@ -128,7 +128,7 @@ namespace RTCodingExercise.Microservices.Controllers
                 }
 
                 var baseUrl = _catalogApiUrl.TrimEnd('/');
-                var requestUrl = $"{baseUrl}/plates";
+                var requestUrl = $"{baseUrl}/api/v1/plates";
 
                 _logger.LogInformation("Making create request to: {Url} with data: {@Model}", requestUrl, model);
 
