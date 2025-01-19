@@ -1,0 +1,129 @@
+@model RTCodingExercise.Microservices.Models.PlatesViewModel
+
+<div class="container">
+    <h2>Registration Plates</h2>
+
+    @if (!string.IsNullOrEmpty(ViewBag.ErrorMessage))
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.ErrorMessage
+        </div>
+    }
+
+    <div class="row mb-3">
+        <div class="col">
+            <form method="get" class="form-inline">
+                <div class="input-group">
+                    <input type="text" class="form-control" name="nameMatch" value="@Model.NameMatch"
+                           placeholder="Search plates">
+                    <input type="number" class="form-control" name="minPrice" value="@Model.MinPrice" placeholder="Min price">
+                    <input type="number" class="form-control" name="maxPrice" value="@Model.MaxPrice" placeholder="Max price">
+                    <select class="form-control" name="sortOrder">
+                        @{
+                            var isAscending = Model.SortOrder == "asc";
+                        }
+                        <option value="asc" selected="@isAscending">Price: Low to High</option>
+                        <option value="desc" selected="@(!isAscending)">Price: High to Low</option>
+                    </select>
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row fw-bold mb-2">
+        <div class="col-md-3">Registration</div>
+        <div class="col-md-3">Purchase Price</div>
+        <div class="col-md-3">Sale Price</div>
+        <div class="col-md-3"></div>
+    </div>
+
+    @foreach (var plate in Model.Items)
+    {
+        <div class="row mb-1 py-2 border-bottom align-items-center">
+            <div class="col-md-3">
+                <span>@(plate.Registration ?? "No Registration")</span>
+            </div>
+            <div class="col-md-3">
+                <span>£@(plate.PurchasePrice.ToString("N2"))</span>
+            </div>
+            <div class="col-md-3">
+                <span>£@(plate.SalePrice.ToString("N2"))</span>
+            </div>
+            <div class="col-md-3 text-end">
+                <select class="form-select form-select-sm status-select"
+                        data-plate-id="@plate.Id"
+                        style="width: auto; display: inline-block;">
+                    @{
+                        var currentStatus = plate.Status;
+                    }
+                    <option value="0" selected="@(currentStatus == 0)">For Sale</option>
+                    <option value="1" selected="@(currentStatus == 1)">Reserved</option>
+                    <option value="2" selected="@(currentStatus == 2)">Sold</option>
+                </select>
+            </div>
+        </div>
+    }
+
+    <div class="row mt-4">
+        <div class="col">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    @if (Model.HasPreviousPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageNumber - 1, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder, nameMatch = Model.NameMatch })">&laquo; Previous</a>
+                        </li>
+                    }
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Page @Model.PageNumber of @Model.TotalPages</span>
+                    </li>
+
+                    @if (Model.HasNextPage)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { pageNumber = Model.PageNumber + 1, minPrice = Model.MinPrice, maxPrice = Model.MaxPrice, sortOrder = Model.SortOrder, nameMatch = Model.NameMatch })">Next &raquo;</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', async function() {
+                    const plateId = this.dataset.plateId;
+                    const newStatus = this.value;
+                    const originalValue = this.querySelector('option[selected]').value;
+
+                    try {
+                        const response = await fetch(
+                            `/Plates/${plateId}/status`,
+                            {
+                                method: 'PATCH',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ status: parseInt(newStatus) })
+                            }
+                        );
+
+                        if (!response.ok) {
+                            throw new Error('Failed to update status');
+                        }
+
+                        console.log('Status updated successfully');
+                    } catch (error) {
+                        alert('Error updating plate status');
+                        this.value = originalValue;
+                    }
+                });
+            });
+        });
+    </script>
+}

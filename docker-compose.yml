@@ -1,0 +1,17 @@
+services:
+  webmvc:
+    image: regtansfers/rtcodingexercise-webmvc
+    build:
+      context: .
+      dockerfile: src/Web/WebMVC/Dockerfile
+    depends_on:
+      - catalog-api
+
+  catalog-api:
+    image: regtransfers/rtcodingexercise-catalogapi
+    build:
+      context: .
+      dockerfile: src/Services/Catalog/Catalog.API/Dockerfile
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine

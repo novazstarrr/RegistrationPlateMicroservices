@@ -1,0 +1,17 @@
+{
+    "files.associations": {
+        "docker-compose*.yml": "dockercompose",
+        "docker-compose*.yaml": "dockercompose"
+    },
+    "[dockercompose]": {
+        "editor.defaultFormatter": "ms-azuretools.vscode-docker"
+    },
+    "yaml.schemas": {
+        "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
+            "docker-compose*.yml",
+            "docker-compose*.yaml"
+        ]
+    },
+    "yaml.validate": false,
+    "files.trimTrailingWhitespace": true
+}
