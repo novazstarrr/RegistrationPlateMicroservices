@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Catalog API Docker Debug",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickRemoteProcess}",
+            "pipeTransport": {
+                "pipeProgram": "/opt/homebrew/bin/docker",
+                "pipeArgs": ["exec", "-i", "catalog-api"],
+                "debuggerPath": "/remote_debugger/vsdbg",
+                "pipeCwd": "${workspaceFolder}",
+                "quoteArgs": false
+            },
+            "sourceFileMap": {
+                "/src/src": "${workspaceRoot}/src"
+            },
+            "justMyCode": true,
+            "requireExactSource": false
+        },
+        {
+            "name": "WebMVC Docker Debug",
+            "type": "coreclr",
+            "request": "attach",
+            "processId": "${command:pickRemoteProcess}",
+            "pipeTransport": {
+                "pipeProgram": "/opt/homebrew/bin/docker",
+                "pipeArgs": ["exec", "-i", "webmvc"],
+                "debuggerPath": "/remote_debugger/vsdbg",
+                "pipeCwd": "${workspaceFolder}",
+                "quoteArgs": false
+            },
+            "sourceFileMap": {
+                "/src/src": "${workspaceRoot}/src"
+            },
+            "justMyCode": true,
+            "requireExactSource": false
+        }
+    ]
+}

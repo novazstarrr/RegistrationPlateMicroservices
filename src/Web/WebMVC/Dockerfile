@@ -11,10 +11,10 @@ COPY ["src/Web/WebMVC/WebMVC.csproj", "src/Web/WebMVC/"]
 RUN dotnet restore "src/Web/WebMVC/WebMVC.csproj"
 COPY . .
 WORKDIR "/src/src/Web/WebMVC"
-RUN dotnet build "WebMVC.csproj" -c Release -o /app/build
+RUN dotnet build "WebMVC.csproj" -c Debug -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "WebMVC.csproj" -c Release -o /app/publish
+RUN dotnet publish "WebMVC.csproj" -c Debug -o /app/publish
 
 FROM base AS final
 WORKDIR /app

@@ -7,11 +7,16 @@ services:
       - ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - EventBusConnection=rabbitmq
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - VS_DOCKER_ENABLE_REMOTE_DEBUGGING=1
+      - EventBusUserName=guest
+      - EventBusPassword=guest
     ports:
       - "5100:80"
     volumes:
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
       - ~/.aspnet/https:/root/.aspnet/https:ro
+      - ${HOME}/.vsdbg:/remote_debugger:rw
 
   catalog-api:
     environment:
@@ -19,11 +24,16 @@ services:
       - ASPNETCORE_URLS=http://0.0.0.0:80
       - EventBusConnection=rabbitmq
       - ConnectionStrings__CatalogConnection=Server=sqlserver;Database=RTCodingExercise.Services.CatalogDb;User Id=sa;Password=Pass@word;TrustServerCertificate=true
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+      - VS_DOCKER_ENABLE_REMOTE_DEBUGGING=1
     ports:
       - "5101:80"
     volumes:
       - ~/.microsoft/usersecrets:/root/.microsoft/usersecrets:ro
       - ~/.aspnet/https:/root/.aspnet/https:ro
+      - ${HOME}/.vsdbg:/remote_debugger:rw
+      - ./src:/src:ro
+    entrypoint: ["dotnet", "/app/Catalog.API.dll"]
 
   rabbitmq:
     ports:
